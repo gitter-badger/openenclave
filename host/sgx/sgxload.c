@@ -328,7 +328,7 @@ static oe_result_t _get_sig_struct(
         if (!(properties->config.attributes & SGX_FLAGS_DEBUG))
             OE_RAISE_MSG(
                 OE_FAILURE,
-                "Failed enclave was not signed with debug flag",
+                "Failed enclave was not signed with debug flag\n",
                 NULL);
 
         /* Perform debug-signing with well-known debug-signing key */
@@ -419,7 +419,7 @@ oe_result_t oe_sgx_initialize_load_context(
     {
         context->dev = open("/dev/isgx", O_RDWR);
         if (context->dev == OE_SGX_NO_DEVICE_HANDLE)
-            OE_RAISE_MSG(OE_FAILURE, "open /dev/isgx device file failed");
+            OE_RAISE_MSG(OE_FAILURE, "open /dev/isgx device file failed\n");
     }
 #endif
 
@@ -514,13 +514,15 @@ oe_result_t oe_sgx_create_enclave(
         if (!base)
             OE_RAISE_MSG(
                 OE_PLATFORM_ERROR,
-                "enclave_create with ENCLAVE_TYPE_SGX1 type failed");
+                "enclave_create with ENCLAVE_TYPE_SGX1 type failed (err=%#x)\n",
+                enclave_error);
 
         secs->base = (uint64_t)base;
 
 #elif defined(__linux__)
 
-        /* Ask the Linux SGX driver to create the enclave */
+        /* Ask the Linux SGX driver to create the enclave
+           sgxioctl internally traces any driver returned error */
         if (sgx_ioctl_enclave_create(context->dev, secs) != 0)
             OE_RAISE(OE_IOCTL_FAILED);
 
@@ -539,7 +541,10 @@ oe_result_t oe_sgx_create_enclave(
             &enclave_error);
 
         if (!base)
-            OE_RAISE_MSG(OE_PLATFORM_ERROR, "Win32: CreateEnclave", NULL);
+            OE_RAISE_MSG(
+                OE_PLATFORM_ERROR,
+                "CreateEnclave failed (err=%#x)\n",
+                enclave_error);
 
         secs->base = (uint64_t)base;
 
@@ -714,7 +719,7 @@ oe_result_t oe_sgx_load_enclave_data(
             (uint8_t*)addr >
                 (uint8_t*)context->sim.addr + context->sim.size - OE_PAGE_SIZE)
             OE_RAISE_MSG(
-                OE_FAILURE, "Page is NOT within enclave boundaries", NULL);
+                OE_FAILURE, "Page is NOT within enclave boundaries\n", NULL);
 
         /* Copy page contents onto memory-mapped region */
         OE_CHECK(oe_memcpy_s(
@@ -724,17 +729,27 @@ oe_result_t oe_sgx_load_enclave_data(
         {
             int prot = _make_memory_protect_param(flags, true /*simulate*/);
 
-            if (prot > OE_INT_MAX)
-                OE_RAISE(OE_FAILURE);
+            if ((uint32_t)prot > OE_INT_MAX)
+                OE_RAISE_MSG(
+                    OE_FAILURE,
+                    "Unexpected page protections: %#x\n",
+                    prot);
 
 #if defined(__linux__)
             if (mprotect((void*)addr, OE_PAGE_SIZE, prot) != 0)
-                OE_RAISE_MSG(OE_FAILURE, "mprotect failed (addr=0x%x)", addr);
+                OE_RAISE_MSG(
+                    OE_FAILURE,
+                    "mprotect failed (addr=%#x, prot=%#x)\n",
+                    addr,
+                    prot);
 #elif defined(_WIN32)
             DWORD old;
             if (!VirtualProtect((LPVOID)addr, OE_PAGE_SIZE, prot, &old))
                 OE_RAISE_MSG(
-                    OE_FAILURE, "VirtualProtect failed (addr=0x%x)", addr);
+                    OE_FAILURE,
+                    "VirtualProtect failed (addr=%#x, prot=%#x)\n",
+                    addr,
+                    prot);
 #endif
         }
     }
@@ -755,12 +770,15 @@ oe_result_t oe_sgx_load_enclave_data(
                 &enclave_error) != OE_PAGE_SIZE)
             OE_RAISE_MSG(
                 OE_PLATFORM_ERROR,
-                "enclave_load_data failed (addr=0x%x)",
-                addr);
+                "enclave_load_data failed (addr=%#x, prot=%#x, err=%#x)\n",
+                addr,
+                protect,
+                enclave_error);
 
 #elif defined(__linux__)
 
-        /* Ask the Linux SGX driver to add a page to the enclave */
+        /* Ask the Linux SGX driver to add a page to the enclave
+           sgxioctl internally traces any driver returned error */
         if (sgx_ioctl_enclave_add_page(
                 context->dev, addr, src, flags, extend) != 0)
             OE_RAISE(OE_IOCTL_FAILED);
@@ -787,7 +805,12 @@ oe_result_t oe_sgx_load_enclave_data(
                 &num_bytes,
                 &enclave_error))
         {
-            OE_RAISE_MSG(OE_PLATFORM_ERROR, "LoadEnclaveData failed", NULL);
+            OE_RAISE_MSG(
+                OE_PLATFORM_ERROR,
+                "LoadEnclaveData failed (addr=%#x, prot=%#x, err=%#x)\n",
+                addr,
+                protect,
+                enclave_error);
         }
 
 #endif
@@ -836,11 +859,11 @@ oe_result_t oe_sgx_initialize_enclave(
                 (const void*)&sigstruct,
                 sizeof(sgx_sigstruct_t),
                 &enclave_error))
-            OE_RAISE_MSG(OE_PLATFORM_ERROR, "enclave_initialize failed");
-
-        if (enclave_error != 0)
             OE_RAISE_MSG(
-                OE_PLATFORM_ERROR, "enclave_error = 0x%x", enclave_error);
+                OE_PLATFORM_ERROR,
+                "enclave_initialize failed (err=%#x)\n",
+                enclave_error);
+
 #else
         /* If not using libsgx, get a launch token from the AESM service */
         sgx_launch_token_t launch_token;
@@ -848,13 +871,15 @@ oe_result_t oe_sgx_initialize_enclave(
 
 #if defined(__linux__)
 
-        /* Ask the Linux SGX driver to initialize the enclave */
+        /* Ask the Linux SGX driver to initialize the enclave
+           sgxioctl internally traces any driver returned error */
         if (sgx_ioctl_enclave_init(
                 context->dev,
                 addr,
                 (uint64_t)&sigstruct,
                 (uint64_t)&launch_token) != 0)
             OE_RAISE(OE_IOCTL_FAILED);
+
 #elif defined(_WIN32)
 
         OE_STATIC_ASSERT(
@@ -885,7 +910,10 @@ oe_result_t oe_sgx_initialize_enclave(
                 &info,
                 sizeof(info),
                 &enclave_error))
-            OE_RAISE_MSG(OE_PLATFORM_ERROR, "InitializeEnclave failed", NULL);
+            OE_RAISE_MSG(
+                OE_PLATFORM_ERROR,
+                "InitializeEnclave failed (err=%#x)\n",
+                enclave_error);
 #endif
 #endif
     }
