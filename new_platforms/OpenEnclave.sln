@@ -105,7 +105,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LocalAttestationHost", "sam
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LocalAttestationEnc", "samples\local_attestation\enc\LocalAttestationEnc.vcxproj", "{E70E9F5A-6661-4298-A91E-9A9DD4AC9017}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Open Enclave SDK", "vsextension\Open Enclave SDK.csproj", "{7942F7C6-D426-4123-B825-CE7BD3CBAB33}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vsextension", "vsextension", "{40407F4A-FD36-4E06-9683-C034E297960A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Open Enclave SDK", "vsextension\ProjectWizard\Open Enclave SDK.csproj", "{7942F7C6-D426-4123-B825-CE7BD3CBAB33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -957,6 +959,7 @@ Global
 		{382C53A4-B048-4CB4-B5AA-4E541A2B8CD7} = {DC407FAF-6C2F-4944-9AB2-83B2CB8B221C}
 		{9B205D53-C538-4841-A7A4-EEA47C1B07C3} = {382C53A4-B048-4CB4-B5AA-4E541A2B8CD7}
 		{E70E9F5A-6661-4298-A91E-9A9DD4AC9017} = {382C53A4-B048-4CB4-B5AA-4E541A2B8CD7}
+		{7942F7C6-D426-4123-B825-CE7BD3CBAB33} = {40407F4A-FD36-4E06-9683-C034E297960A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8CF7576A-AF62-48A0-8727-4E0F32CCE866}

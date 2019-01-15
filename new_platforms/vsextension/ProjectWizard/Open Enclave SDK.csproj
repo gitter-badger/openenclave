@@ -64,25 +64,13 @@
     for zipping into packageable Zip files.
   -->
   <ItemGroup>
-    <OEConsoleAppProject_Content Include="ProjectTemplates\oeconsoleapp\**" />
-    <OEEnclaveProject_Content Include="ProjectTemplates\oeenclave\ecalls.c" />
-    <OEEnclaveProject_Content Include="ProjectTemplates\oeenclave\enclave.vstemplate" />
-    <OEEnclaveProject_Content Include="ProjectTemplates\oeenclave\linux_gcc.mak" />
-    <OEEnclaveProject_Content Include="ProjectTemplates\oeenclave\MyEnclave.config.xml" />
-    <OEEnclaveProject_Content Include="ProjectTemplates\oeenclave\MyEnclave.edl" />
-    <OEEnclaveProject_Content Include="ProjectTemplates\oeenclave\MyEnclave.vcxproj" />
-    <OEEnclaveProject_Content Include="ProjectTemplates\oeenclave\MyEnclave.vcxproj.filters" />
-    <OEEnclaveProject_Content Include="ProjectTemplates\oeenclave\MyEnclave_private.pem" />
-    <OEEnclaveProject_Content Include="ProjectTemplates\oeenclave\sub.mk" />
-    <OEEnclaveProject_Content Include="ProjectTemplates\oeenclave\uuids.reg" />
-    <OEEnclaveProject_Content Include="ProjectTemplates\oeenclave\__TemplateIcon.ico" />
-    <OEHostDllProject_Content Include="ProjectTemplates\oehostdll\**" />
+    <OEConsoleAppProject_Content Include="..\ProjectTemplates\oeconsoleapp\**" />
+    <OEEnclaveProject_Content Include="..\ProjectTemplates\oeenclave\**" />
+    <OEHostDllProject_Content Include="..\ProjectTemplates\oehostdll\**" />
   </ItemGroup>
   <ItemGroup>
     <None Include="key.snk" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -100,14 +88,15 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TemplateWizardInterface, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Target Name="PlaceTemplates">
     <!-- Zip the Template files. -->
-    <Zip Files="@(OEConsoleAppProject_Content);" Flatten="True" ZipFileName="ProjectTemplates\Built\OEConsoleAppProject.zip" />
-    <Zip Files="@(OEEnclaveProject_Content);" Flatten="True" ZipFileName="ProjectTemplates\Built\OEEnclaveProject.zip" />
-    <Zip Files="@(OEHostDllProject_Content);" Flatten="True" ZipFileName="ProjectTemplates\Built\OEHostDllProject.zip" />
+    <Zip Files="@(OEConsoleAppProject_Content);" Flatten="True" ZipFileName="..\ProjectTemplates\Built\OEConsoleAppProject.zip" />
+    <Zip Files="@(OEEnclaveProject_Content);" Flatten="True" ZipFileName="..\ProjectTemplates\Built\OEEnclaveProject.zip" />
+    <Zip Files="@(OEHostDllProject_Content);" Flatten="True" ZipFileName="..\ProjectTemplates\Built\OEHostDllProject.zip" />
     <!--
       Mark the Templates for copying to the VSIX file.
 
@@ -123,17 +112,17 @@
             <Program Files>\Microsoft Visual Studio 14.0\Common7\IDE\ProjectTemplates.
     -->
     <ItemGroup>
-      <Content Include="ProjectTemplates\Built\OEConsoleAppProject.zip">
+      <Content Include="..\ProjectTemplates\Built\OEConsoleAppProject.zip">
         <Link>ProjectTemplates\VC\OEConsoleAppProject.zip</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="ProjectTemplates\Built\OEEnclaveProject.zip">
+      <Content Include="..\ProjectTemplates\Built\OEEnclaveProject.zip">
         <Link>ProjectTemplates\VC\OEEnclaveProject.zip</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="ProjectTemplates\Built\OEHostDllProject.zip">
+      <Content Include="..\ProjectTemplates\Built\OEHostDllProject.zip">
         <Link>ProjectTemplates\VC\OEHostDllProject.zip</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         <IncludeInVSIX>true</IncludeInVSIX>
@@ -147,11 +136,11 @@
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  <Import Project="..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets" Condition="Exists('..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" />
+  <Import Project="..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets" Condition="Exists('..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets'))" />
+    <Error Condition="!Exists('..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets'))" />
   </Target>
 </Project>

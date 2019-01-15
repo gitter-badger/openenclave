@@ -3,7 +3,7 @@
     <Metadata>
         <Identity Id="OpenEnclaveVisualStudioExtension-1" Version="1.0" Language="en-US" Publisher="Microsoft" />
         <DisplayName>Open Enclave SDK</DisplayName>
-        <Description xml:space="preserve">Open Enclave VSIX Project</Description>
+        <Description xml:space="preserve">Open Enclave Project Wizard</Description>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0, 16.0)" />
