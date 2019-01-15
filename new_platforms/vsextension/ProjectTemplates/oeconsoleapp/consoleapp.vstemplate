@@ -12,8 +12,8 @@
     <Icon>__TemplateIcon.ico</Icon>
   </TemplateData>
   <TemplateContent>
-    <Project TargetFileName="$projectname$.vcxproj" File="MyHost.vcxproj" ReplaceParameters="true">
-      <ProjectItem ReplaceParameters="true" TargetFileName="$projectname$.vcxproj.filters">MyHost.vcxproj.filters</ProjectItem>
+    <Project TargetFileName="$projectname$.vcxproj" File="MuConsoleApp.vcxproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" TargetFileName="$projectname$.vcxproj.filters">MuConsoleApp.vcxproj.filters</ProjectItem>
       <ProjectItem ReplaceParameters="true">host.c</ProjectItem>
       <ProjectItem ReplaceParameters="true">ocalls.c</ProjectItem>
     </Project>

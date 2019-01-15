@@ -1,10 +1,9 @@
-<#@ template language="C#" #>
 /* Copyright (c) Microsoft Corporation. All rights reserved. */
 /* Licensed under the MIT License. */
 #pragma once
 
-#define TA_UUID /* <#=Guid1String#> */ \
-  <#=Guid1Struct#>
+#define TA_UUID /* $guid1$ */ \
+  $guid1struct$
 
 #define TA_FLAGS                    (TA_FLAG_MULTI_SESSION | TA_FLAG_EXEC_DDR)
 #define TA_STACK_SIZE               (12 * 1024)        /* 12 KB */

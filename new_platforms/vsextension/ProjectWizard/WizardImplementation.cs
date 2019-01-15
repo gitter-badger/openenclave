@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TemplateWizard;
 using System.Windows.Forms;
 using EnvDTE;
-using OpenEnclaveSDK.ProjectTemplates.oeenclave;
-using Microsoft.VisualStudio.TextTemplating;
-using Microsoft.VisualStudio.TextTemplating.VSHost;
-using System.IO;
 
 namespace OpenEnclaveSDK
 {
@@ -32,14 +28,6 @@ namespace OpenEnclaveSDK
         {
         }
 
-        private static void WriteFile(string outputFolder, string fileName, string contents)
-        {
-            using (var file = new StreamWriter(Path.Combine(outputFolder, fileName)))
-            {
-                file.Write(contents);
-            }
-        }
-
         public void RunStarted(
             object automationObject,
             Dictionary<string, string> replacementsDictionary,
@@ -48,16 +36,13 @@ namespace OpenEnclaveSDK
         {
             try
             {
-                string destinationDirectory;
-                replacementsDictionary.TryGetValue("$destinationdirectory$", out destinationDirectory);
-                string opteeDirectory = Path.Combine(destinationDirectory, "optee");
-
                 string guid1;
                 replacementsDictionary.TryGetValue("$guid1$", out guid1);
 
-                var pt1 = new user_ta_header_definesH(guid1);
-                string outputText1 = pt1.TransformText();
-                WriteFile(opteeDirectory, "user_ta_header_defines.h", outputText1);
+                /* Add $guid1struct$ */
+                Guid guid1binary = Guid.Parse(guid1);
+                string guid1struct = guid1binary.ToString("X");
+                replacementsDictionary.Add("$guid1struct$", guid1struct);
             }
             catch (Exception ex)
             {
